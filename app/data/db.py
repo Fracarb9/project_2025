@@ -35,8 +35,10 @@ def init_database() -> None:
 
             for i in range(5): #Creazione fittizia di eventi in caso di DB vuoto
                 event = Event(
-                    name = f.catch_phrase(),  #Breve frase
+                    title = f.catch_phrase(),  #Breve frase
                     description = f.paragraph(nb_sentences=3), #Paragrafetto
+                    date = f.future_datetime(end_date="+2y"),
+                    location = f.city(),
                     id = None
                 )
                 session.add(event)
