@@ -4,8 +4,10 @@ from fastapi import Depends
 import os
 from faker import Faker
 from app.config import config
-# TODO: remember to import all the DB models here
+# Importati: remember to import all the DB models here
 from app.models.registration import Registration  # NOQA
+from app.models.user import User
+from app.models.event import Event
 
 
 sqlite_file_name = config.root_dir / "data/database.db"
@@ -20,8 +22,26 @@ def init_database() -> None:
     if not ds_exists:
         f = Faker("it_IT")
         with Session(engine) as session:
-            # TODO: (optional) initialize the database with fake data
-            ...
+
+            # Complete: (optional) initialize the database with fake data
+            for i in range(5): #Creazione fittizia di utenti in caso di DB vuoto
+                user = User(
+                    username=f.user_name(),
+                    name=f.name(),
+                    email=f.email()
+                )
+                session.add(user)
+            session.commit()
+
+            for i in range(5): #Creazione fittizia di eventi in caso di DB vuoto
+                event = Event(
+                    name = f.catch_phrase(),  #Breve frase
+                    description = f.paragraph(nb_sentences=3), #Paragrafetto
+                    id = None
+                )
+                session.add(event)
+            session.commit()
+
 
 
 def get_session():
