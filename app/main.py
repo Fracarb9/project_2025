@@ -13,7 +13,7 @@ if Path(__file__).parent == Path(os.getcwd()):
 # You can add imports from here...
 
 from fastapi import FastAPI
-from app.routers import frontend
+from app.routers import frontend, events
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 from app.data.db import init_database
@@ -28,6 +28,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+app.include_router(events.router, tags=["events"])
 app.mount(
     "/static",
     StaticFiles(directory=config.root_dir / "static"),
