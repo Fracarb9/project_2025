@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from sqlmodel import select
+from sqlmodel import select, delete
 from app.data.db import SessionDep
 from app.models.user import User, UserCreate, UserPublic
 
@@ -28,3 +28,11 @@ def create_user(user_create: UserCreate, session: SessionDep):
     session.commit()
     session.refresh(new_user)
     return new_user
+
+@router.delete("/")
+def delete_all_users(session: SessionDep):
+    """Deletes all users."""
+    statement = delete(User)
+    session.exec(statement)
+    session.commit()
+    return "All users successfully deleted"
