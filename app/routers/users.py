@@ -39,7 +39,7 @@ def delete_all_users(session: SessionDep):
     session.commit()
     return "All users successfully deleted"
 
-@router.get("/users/{username}", response_model=UserPublic)
+@router.get("/{username}", response_model=UserPublic)
 def get_user_by_username(
     session: SessionDep,
     username: Annotated[str, Path(description="The username of the user to get")]
