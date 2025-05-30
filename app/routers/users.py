@@ -29,7 +29,7 @@ def create_user(user_create: UserCreate, session: SessionDep):
     session.add(new_user)
     session.commit()
     session.refresh(new_user)
-    return new_user
+    return "User successfully created"
 
 @router.delete("/")
 def delete_all_users(session: SessionDep):
