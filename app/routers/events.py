@@ -3,10 +3,6 @@ from app.models.event import Event, EventPublic, EventCreate
 from app.data.db import SessionDep
 from sqlmodel import select
 
-from app.models.registration import Registration
-from app.models.user import RegisterUserRequest
-from app.models.user import User
-
 router = APIRouter(prefix="/events")
 
 @router.get("/")
@@ -67,53 +63,3 @@ def delete_event(
     session.delete(event)
     session.commit()
     return "Event successfully deleted"
-
-@router.post("/{id}/register")
-def register_user_to_event(
-        id: int,
-        user_data: RegisterUserRequest,
-        db: SessionDep
-):
-    """Registers a new user."""
-    event = db.exec(select(Event).where(Event.id == id)).first()
-    if not event:
-        raise HTTPException(status_code=404, detail="Evento non trovato")
-
-    user= db.exec(select(User).where(User.username == user_data.username)).first()
-    if not user:
-        user = User(
-            username=user_data.username,
-            name=user_data.name,
-            email= user_data.email
-        )
-        db.add(user)
-        db.commit()
-
-    registration= db.exec(
-
-        select(Registration).where(
-            (Registration.username == user.data.username)&
-            (Registration.event_id == id)
-        )
-    ).first()
-
-    if registration:
-        raise HTTPException(status_code=400, detail="Utente già registrato all'evento")
-
-    new_registration = Registration(username=user.data.username, event_id=id)
-    db.add(new_registration)
-    db.commit()
-
-    return {"message": "Registrazione completata con successo"}
-
-
-@router.delete("/", status_code=204)
-def delete_all_events(db: SessionDep):
-    events = db.exec(select(Event)).all
-
-    if not events:
-        raise HTTPException(status_code=404, detail="Evento non trovato")
-
-    for event in events:
-        db.delete(event)
-    db.commit()
