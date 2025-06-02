@@ -30,7 +30,6 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 app.include_router(events.router, tags=["events"])
 app.include_router(users.router,  tags=["users"])
-
 app.include_router(registrations.router, tags=["registrations"])
 
 app.mount(
