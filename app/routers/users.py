@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Path
 from sqlmodel import select, delete
 from app.data.db import SessionDep
-from app.models.user import User, UserCreate, UserPublic
+from app.models.user import User
 from typing import Annotated
 
 
@@ -9,7 +9,7 @@ router = APIRouter(prefix="/users")
 
 
 @router.get("/")
-def get_all_users(session: SessionDep) -> list[UserPublic]:
+def get_all_users(session: SessionDep) -> list[User]:
     """Returns all users"""
     statement = select(User)
     users = session.exec(statement).all()
@@ -17,7 +17,7 @@ def get_all_users(session: SessionDep) -> list[UserPublic]:
 
 
 @router.post("/")
-def create_user(user_create: UserCreate, session: SessionDep):
+def create_user(user_create: User, session: SessionDep):
     """Creates a new user."""
     existing_user = session.exec(
         select(User).where(User.username == user_create.username)
@@ -39,11 +39,11 @@ def delete_all_users(session: SessionDep):
     session.commit()
     return "All users successfully deleted"
 
-@router.get("/{username}", response_model=UserPublic)
+@router.get("/{username}", response_model=User)
 def get_user_by_username(
     session: SessionDep,
     username: Annotated[str, Path(description="The username of the user to get")]
-) -> UserPublic:
+) -> User:
     """Returns the user with the given username."""
     user = session.get(User, username)
     if user is None:
