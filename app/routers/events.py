@@ -78,6 +78,7 @@ def delete_all_events(db: SessionDep):
     for event in events:
         db.delete(event)
     db.commit()
+    return {"message":"All event successfully deleted"}
 
 
 @router.post("/{id}/register")
