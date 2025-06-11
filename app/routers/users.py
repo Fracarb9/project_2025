@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Path
 from sqlmodel import select, delete
 from app.data.db import SessionDep
 from app.models.user import User, UserCreate, UserPublic
-from typing import Annotated
+
 
 
 router = APIRouter(prefix="/users")
@@ -42,7 +42,7 @@ def delete_all_users(session: SessionDep):
 @router.get("/{username}", response_model=UserPublic)
 def get_user_by_username(
     session: SessionDep,
-    username: Annotated[str, Path(description="The username of the user to get")]
+    username: str
 ) -> UserPublic:
     """Returns the user with the given username."""
     user = session.get(User, username)
@@ -53,7 +53,7 @@ def get_user_by_username(
 @router.delete("/{username}")
 def delete_user(
     session: SessionDep,
-    username : Annotated[str, Path(description="The username of the user to delete")]
+    username :str
 ):
     """Deletes the user with the given ID."""
     user = session.get(User, username)
