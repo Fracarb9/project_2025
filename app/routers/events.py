@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Path, Form
+from fastapi import APIRouter, Depends, HTTPException, Path
 from sqlmodel import select
 from app.models.user import User
 from app.models.registration import Registration, RegisterUserRequest
@@ -68,24 +68,24 @@ def delete_event(
     return "Event successfully deleted"
 
 
-@router.delete("/", status_code=204)
+@router.delete("/")
 def delete_all_events(db: SessionDep):
+    """Deletes all existing events"""
     events = db.exec(select(Event)).all()
-
     if not events:
         raise HTTPException(status_code=404, detail="No events to delete.")
-
-    for event in events:
-        db.delete(event)
-    db.commit()
-    return {"message":"All event successfully deleted"}
+    else:
+        for event in events:
+            db.delete(event)
+        db.commit()
+        return "All events deleted"
 
 
 @router.post("/{id}/register")
 def register_user_to_event(
-    id: int = Path(..., description="Event ID"),
-    user_data: RegisterUserRequest = ...,
-    db: SessionDep = None
+    id: int,
+    user_data: RegisterUserRequest,
+    db: SessionDep
 ):
     """Registers a new user to an event by ID."""
 
@@ -96,6 +96,7 @@ def register_user_to_event(
 
 
     user = db.exec(select(User).where(User.username == user_data.username)).first()
+
     if not user:
         user = User(
             username=user_data.username,
@@ -121,4 +122,4 @@ def register_user_to_event(
     db.add(registration)
     db.commit()
 
-    return {"message": "Registration successful"}
+    return {"message":"Registration successful"}

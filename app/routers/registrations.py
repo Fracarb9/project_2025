@@ -8,8 +8,10 @@ router = APIRouter(prefix="/registrations")
 
 @router.get("/", response_model=list[RegistrationPublic])
 def get_all_registrations(db:SessionDep):
+    """Get the registration list"""
     registrations = db.exec(select(Registration)).all()
     return registrations
+
 @router.delete("/")
 def delete_registration(
     username: str,
