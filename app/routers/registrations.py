@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 from app.data.db import SessionDep
 from sqlmodel import select
 from app.models.registration import RegistrationPublic
@@ -32,5 +32,5 @@ def delete_registration(
 
     session.delete(registration)
     session.commit()
-    return {"message": "Registration successfully deleted"}
+    return "Registration successfully deleted"
 

@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, Path
+from fastapi import APIRouter, HTTPException
 from sqlmodel import select
 from app.models.user import User
 from app.models.registration import Registration, RegisterUserRequest
-from app.models.event import Event, EventPublic, EventCreate
+from app.models.event import Event, EventPublic, EventBase
 from app.data.db import SessionDep
 
 
@@ -18,7 +18,7 @@ def get_events_list(
     return events
 
 @router.post("/")
-def create_event(event:EventCreate, session: SessionDep):
+def create_event(event:EventBase, session: SessionDep):
     """Creates a new event."""
     new_event = Event.model_validate(event)
     session.add(new_event)
@@ -40,7 +40,7 @@ def get_event_by_id(
 def update_event(
         session: SessionDep,
         id: int,
-        new_event: EventCreate,
+        new_event: EventBase,
 ):
     """Updates an existing event."""
     event = session.get(Event, id)
@@ -122,4 +122,4 @@ def register_user_to_event(
     db.add(registration)
     db.commit()
 
-    return {"message":"Registration successful"}
+    return "Registration successful"
