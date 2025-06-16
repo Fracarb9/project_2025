@@ -8,6 +8,7 @@ from app.config import config
 from app.models.registration import Registration  # NOQA
 from app.models.user import User
 from app.models.event import Event
+from sqlalchemy import event
 
 
 sqlite_file_name = config.root_dir / "data/database.db"
@@ -15,6 +16,11 @@ sqlite_url = f"sqlite:///{sqlite_file_name}"
 connect_args = {"check_same_thread": False}
 engine = create_engine(sqlite_url, connect_args=connect_args, echo=True)
 
+@event.listens_for(engine, "connect")
+def enable_foreign_keys(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 def init_database() -> None:
     ds_exists = os.path.isfile(sqlite_file_name)
